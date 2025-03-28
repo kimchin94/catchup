@@ -1,0 +1,18 @@
+{
+  "name": "catchup",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "nx serve",
+    "build": "nx build",
+    "test": "nx test"
+  },
+  "private": true,
+  "devDependencies": {
+    "@nx/nest": "^17.3.2",
+    "@nx/react": "^17.3.2",
+    "@nx/workspace": "^17.2.8",
+    "nx": "^17.2.8",
+    "typescript": "^5.3.3"
+  }
+}

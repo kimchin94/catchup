@@ -1,0 +1,356 @@
+### Key Points
+- It seems likely that building a simple POC application using React (Vite) + React Router, TypeScript, NestJS, PostgreSQL, and Docker with Rancher Desktop is achievable with step-by-step guidance, especially for someone new to backend development.
+- Research suggests starting with a mono-repo using Nx for better organization, focusing on basic project management features like listing projects and adding sales/cost plans.
+- The evidence leans toward keeping the POC simple, such as ignoring complex hierarchies and focusing on REST APIs instead of GraphQL, given the user's experience level.
+
+### Planning and To-Do Checklist
+To construct a simple POC application, we'll break it down into manageable parts for a beginner. Here's a detailed to-do checklist with execution blocks:
+
+#### Set Up Development Environment
+- **Install Node.js and npm**: Ensure you have Node.js and npm installed from [nodejs.org](https://nodejs.org).
+- **Install Docker**: Download and install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop).
+
+#### Create a Mono-Repo with Nx
+- **Install Nx CLI**: Run `npm install -g nx` to get the Nx command-line interface.
+- **Initialize Workspace**: Create a new Nx workspace with `npx create-nx-workspace@latest myworkspace --preset=empty`, choosing npm or Yarn as preferred.
+- **Add NestJS App**: Install the NestJS plugin with `npm install --save-dev @nx/nest`, then generate the app with `nx g @nx/nest:app backend`.
+- **Add React App with Vite**: Install the React plugin with `npm install --save-dev @nx/react`, then generate with `nx g @nx/react:app frontend --bundler=vite`.
+
+#### Backend Development with NestJS
+- **Set Up Prisma**: In the backend directory (`cd apps/backend`), install Prisma with `npm install prisma --save-dev` and initialize with `npx prisma init`.
+- **Define Schema**: Edit `prisma/schema.prisma` to include models for Project, SalesPlan, and CostPlan, then generate the client with `npx prisma generate` and install `@prisma/client` with `npm install @prisma/client`.
+- **Create Services and Controllers**: Use Nx to generate modules, services, and controllers for your entities, implementing CRUD operations using Prisma.
+
+#### Database Setup
+- **Run PostgreSQL**: Create a `docker-compose.yml` file with a PostgreSQL service, then start it with `docker-compose up -d db`.
+- **Configure Connection**: Set the `DATABASE_URL` in the backend's `.env` file, and run migrations with `npx prisma migrate dev --name init`.
+
+#### Frontend Development with React and Vite
+- **Set Up React Router**: Install `react-router-dom` with `npm install react-router-dom`, and configure routes in `App.tsx`.
+- **Create Pages**: Develop pages like ProjectList and ProjectDetails, using Axios to call backend APIs at `http://localhost:3000`.
+
+#### Containerization
+- **Create Dockerfiles**: Write Dockerfiles for both backend and frontend in their respective directories.
+- **Update docker-compose.yml**: Include services for backend and frontend, ensuring proper port mappings and dependencies.
+- **Run Application**: Start the stack with `docker-compose up --build`, accessing the frontend at `http://localhost:5173`.
+
+### Unexpected Detail
+An unexpected aspect is using Nx for a mono-repo, which might be new for someone with Angular experience, but it simplifies managing both frontend and backend in one workspace, making future extensions easier.
+
+---
+
+### Survey Note: Detailed Planning and Implementation for POC Application
+
+This section provides a comprehensive guide for constructing a simple Proof of Concept (POC) application using React (Vite) + React Router, TypeScript, NestJS, PostgreSQL, and deploying with Docker, managed through Rancher Desktop, in a mono-repo setup. Given the user's limited backend experience (0 years) and moderate frontend experience (0.5 years with Angular), the approach is designed to be beginner-friendly, focusing on simplicity and extensibility.
+
+#### Background and Requirements Analysis
+The ultimate project involves project profitability management, with features like sales plans, cost plans, project hierarchies, and integrations with systems like SCOPE and TimeTracker. However, for the POC, we simplify to focus on core functionality: managing projects with basic sales and cost plans, ignoring complex hierarchies and roles for now. The user mentioned a previous GraphQL POC, which will not be used, shifting to REST APIs for future implementations. Deployment on ECS Fargate with Docker and Rancher Desktop is noted, but for the POC, we'll focus on local deployment using Docker Compose, with optional steps for cloud deployment later.
+
+#### Detailed To-Do Checklist and Execution Blocks
+To ensure manageability, we break the process into clear steps, each with execution blocks for the user to follow.
+
+##### 1. Set Up Development Environment
+- **Objective**: Ensure all necessary tools are installed for development.
+- **Steps**:
+  - Install Node.js and npm from [nodejs.org](https://nodejs.org), verifying with `node -v` and `npm -v`.
+  - Install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop), ensuring it runs by checking the Docker icon in the system tray.
+- **Rationale**: These are foundational for running JavaScript applications and containerizing services, respectively.
+
+##### 2. Create a Mono-Repo with Nx
+- **Objective**: Set up a unified repository for both frontend and backend using Nx for better organization.
+- **Steps**:
+  - Install Nx CLI globally: `npm install -g nx`.
+  - Create a new Nx workspace: `npx create-nx-workspace@latest myworkspace --preset=empty`, selecting npm or Yarn based on preference.
+  - Add NestJS application: First, `npm install --save-dev @nx/nest`, then `nx g @nx/nest:app backend` to generate the backend app.
+  - Add React application with Vite: Install `npm install --save-dev @nx/react`, then `nx g @nx/react:app frontend --bundler=vite` for the frontend.
+- **Rationale**: Nx simplifies mono-repo management, especially for TypeScript projects, and supports both NestJS and React, aligning with the user's tech stack. This is particularly helpful for beginners, as Nx provides schematics for generating code.
+
+##### 3. Backend Development with NestJS
+- **Objective**: Build the REST API for managing projects, sales plans, and cost plans.
+- **Steps**:
+  - **Set Up Prisma**: Navigate to `apps/backend`, run `npm install prisma --save-dev` and `npx prisma init` to set up Prisma, creating `prisma/schema.prisma` and a `.env` file.
+  - **Define Schema**: Edit `prisma/schema.prisma` with the following models:
+    ```prisma
+    datasource db {
+      provider = "postgresql"
+      url      = env("DATABASE_URL")
+    }
+
+    generator client {
+      provider = "prisma-client-js"
+    }
+
+    model Project {
+      id          Int      @id @default(autoincrement())
+      name        String
+      description String?
+      salesPlans  SalesPlan[]
+      costPlans   CostPlan[]
+    }
+
+    model SalesPlan {
+      id        Int      @id @default(autoincrement())
+      projectId Int
+      project   Project  @relation(fields: [projectId], references: [id])
+      amount    Float
+      date      DateTime
+    }
+
+    model CostPlan {
+      id        Int      @id @default(autoincrement())
+      projectId Int
+      project   Project  @relation(fields: [projectId], references: [id])
+      amount    Float
+      date      DateTime
+      costType  String
+    }
+    ```
+  - Generate Prisma client: `npx prisma generate`, then install `@prisma/client` with `npm install @prisma/client`.
+  - **Create Prisma Service**: Create `src/prisma.service.ts`:
+    ```typescript
+    import { Injectable, OnModuleInit } from '@nestjs/common';
+    import { PrismaClient } from '@prisma/client';
+
+    @Injectable()
+    export class PrismaService extends PrismaClient implements OnModuleInit {
+      async onModuleInit() {
+        await this.$connect();
+      }
+    }
+    ```
+  - Add to `src/app.module.ts`:
+    ```typescript
+    import { Module } from '@nestjs/common';
+    import { AppController } from './app.controller';
+    import { AppService } from './app.service';
+    import { PrismaService } from './prisma.service';
+
+    @Module({
+      imports: [],
+      controllers: [AppController],
+      providers: [AppService, PrismaService],
+    })
+    export class AppModule {}
+    ```
+  - **Generate Modules and Services**: Use Nx to generate for Project, SalesPlan, and CostPlan, e.g., `nx g @nx/nest:module projects --project=backend`, and similarly for services and controllers.
+  - **Implement CRUD**: In services like `projects.service.ts`, implement methods using Prisma, e.g.:
+    ```typescript
+    async create(data: Prisma.ProjectCreateInput): Promise<Project> {
+      return this.prisma.project.create({ data });
+    }
+    ```
+  - Ensure controllers expose endpoints, e.g., in `projects.controller.ts`:
+    ```typescript
+    @Controller('projects')
+    export class ProjectsController {
+      constructor(private readonly projectsService: ProjectsService) {}
+
+      @Post()
+      async create(@Body() data: { name: string; description?: string }): Promise<Project> {
+        return this.projectsService.create(data);
+      }
+
+      @Get()
+      async findAll(): Promise<Project[]> {
+        return this.projectsService.findAll();
+      }
+
+      @Get(':id')
+      async findOne(@Param('id') id: string): Promise<Project | null> {
+        return this.projectsService.findOne(parseInt(id, 10));
+      }
+    }
+    ```
+- **Rationale**: NestJS with Prisma simplifies backend development, especially for REST APIs, and TypeScript ensures type safety, aligning with the user's frontend experience.
+
+##### 4. Database Setup
+- **Objective**: Ensure a local PostgreSQL database is running for development.
+- **Steps**:
+  - Create `docker-compose.yml` in the root with:
+    ```yaml
+    version: '3'
+    services:
+      db:
+        image: postgres:13
+        environment:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mydb
+        ports:
+          - "5432:5432"
+    ```
+  - Run `docker-compose up -d db` to start the database.
+  - In backend's `.env`, set `DATABASE_URL="postgresql://user:password@localhost:5432/mydb?schema=public"`.
+  - Run migrations: `npx prisma migrate dev --name init` to create tables.
+- **Rationale**: Using Docker for PostgreSQL ensures consistency across environments, and Prisma migrations handle schema changes easily.
+
+##### 5. Frontend Development with React and Vite
+- **Objective**: Build a simple UI for interacting with the backend API.
+- **Steps**:
+  - **Set Up React Router**: In `apps/frontend`, run `npm install react-router-dom`.
+  - Update `src/main.tsx` or `src/index.tsx` to wrap the app with BrowserRouter:
+    ```typescript
+    import React from 'react';
+    import ReactDOM from 'react-dom/client';
+    import { BrowserRouter } from 'react-router-dom';
+    import App from './App';
+
+    ReactDOM.createRoot(document.getElementById('root')!).render(
+      <React.StrictMode>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.StrictMode>
+    );
+    ```
+  - In `App.tsx`, set up routes:
+    ```typescript
+    import { Routes, Route } from 'react-router-dom';
+    import ProjectList from './pages/ProjectList';
+    import ProjectDetails from './pages/ProjectDetails';
+
+    function App() {
+      return (
+        <Routes>
+          <Route path="/" element={<ProjectList />} />
+          <Route path="/projects/:id" element={<ProjectDetails />} />
+        </Routes>
+      );
+    }
+
+    export default App;
+    ```
+  - Create `src/pages/ProjectList.tsx`:
+    ```typescript
+    import React, { useEffect, useState } from 'react';
+    import { Link } from 'react-router-dom';
+    import axios from 'axios';
+
+    interface Project {
+      id: number;
+      name: string;
+      description?: string;
+    }
+
+    const ProjectList: React.FC = () => {
+      const [projects, setProjects] = useState<Project[]>([]);
+
+      useEffect(() => {
+        axios.get('http://localhost:3000/projects')
+          .then(response => setProjects(response.data))
+          .catch(error => console.error('Error fetching projects:', error));
+      }, []);
+
+      return (
+        <div>
+          <h1>Projects</h1>
+          <ul>
+            {projects.map(project => (
+              <li key={project.id}>
+                <Link to={`/projects/${project.id}`}>{project.name}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    };
+
+    export default ProjectList;
+    ```
+  - Create `src/pages/ProjectDetails.tsx` similarly, including sales and cost plans, with profitability calculation.
+- **Rationale**: React with Vite offers fast development, and React Router handles navigation, leveraging the user's Angular experience for component-based UI.
+
+##### 6. Containerization
+- **Objective**: Package the application for local deployment using Docker.
+- **Steps**:
+  - Create `apps/backend/Dockerfile`:
+    ```dockerfile
+    FROM node:18
+
+    WORKDIR /app
+
+    COPY package*.json ./
+
+    RUN npm install
+
+    COPY . .
+
+    RUN npx prisma generate
+
+    CMD ["npm", "run", "start:dev"]
+    ```
+  - Create `apps/frontend/Dockerfile`:
+    ```dockerfile
+    FROM node:18
+
+    WORKDIR /app
+
+    COPY package*.json ./
+
+    RUN npm install
+
+    COPY . .
+
+    EXPOSE 5173
+
+    CMD ["npm", "run", "dev", "--", "--host"]
+    ```
+  - Update `docker-compose.yml` to include:
+    ```yaml
+    version: '3'
+    services:
+      db:
+        image: postgres:13
+        environment:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: mydb
+        ports:
+          - "5432:5432"
+
+      backend:
+        build: ./apps/backend
+        ports:
+          - "3000:3000"
+        depends_on:
+          - db
+        environment:
+          DATABASE_URL: "postgresql://user:password@db:5432/mydb?schema=public"
+
+      frontend:
+        build: ./apps/frontend
+        ports:
+          - "5173:5173"
+        depends_on:
+          - backend
+    ```
+  - Run `docker-compose up --build` to start all services, accessing the frontend at `http://localhost:5173`.
+- **Rationale**: Docker Compose simplifies local development, ensuring all services (database, backend, frontend) run in isolation, preparing for future deployment.
+
+#### Tables for Reference
+Below is a table summarizing the key technologies and their roles:
+
+| Technology         | Role                                      |
+|--------------------|-------------------------------------------|
+| React (Vite)       | Frontend UI development, fast build times |
+| React Router       | Navigation between pages                  |
+| TypeScript         | Type safety for both frontend and backend |
+| NestJS             | Backend REST API development              |
+| PostgreSQL         | Database for storing project data         |
+| Docker             | Containerization for local deployment     |
+| Nx                 | Mono-repo management and code generation  |
+
+#### Considerations and Extensions
+- The POC focuses on basic CRUD operations for projects and plans, ignoring the hierarchical structure and roles from the requirements for simplicity. This can be extended later to include the full 5-level hierarchy and permissions.
+- Deployment to ECS Fargate is noted but not implemented here; for local testing, Rancher Desktop could be used for Kubernetes, but Docker Compose suffices for now. Future steps would involve AWS setup, ECR image pushing, and task definitions, which are more advanced and can be tackled post-POC.
+- The user's Angular experience translates well to React, but Nx might be new; its benefits include streamlined workflows and TypeScript support, making it a good fit for mono-repos.
+
+This detailed guide ensures the user can build a functional POC, extensible to meet future requirements, with clear steps and code examples for each part.
+
+#### Key Citations
+- [Nx Documentation for Creating Workspaces](https://nx.dev/latest/angular/getting-started/nx-setup)
+- [NestJS Documentation for Getting Started](https://docs.nestjs.com/first-steps)
+- [Prisma Documentation for Quickstart](https://www.prisma.io/docs/getting-started/quickstart)
+- [React Documentation for Getting Started](https://react.dev/learn)
+- [Vite Documentation for Project Setup](https://vitejs.dev/guide/)
+- [Docker Documentation for Getting Started](https://docs.docker.com/get-started/)

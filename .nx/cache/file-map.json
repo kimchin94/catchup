@@ -1,0 +1,174 @@
+{
+  "version": "6.0",
+  "nxVersion": "17.3.2",
+  "deps": {
+    "@nx/nest": "^17.3.2",
+    "@nx/react": "^17.3.2",
+    "@nx/workspace": "^17.2.8",
+    "nx": "^17.2.8",
+    "typescript": "^5.3.3"
+  },
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {},
+    "nonProjectFiles": [
+      {
+        "file": "apps/frontend/.gitignore",
+        "hash": "13046175384202504187"
+      },
+      {
+        "file": "apps/frontend/README.md",
+        "hash": "6831436746312197211"
+      },
+      {
+        "file": "apps/frontend/eslint.config.js",
+        "hash": "16145672096969245511"
+      },
+      {
+        "file": "apps/frontend/index.html",
+        "hash": "4025202329384162906"
+      },
+      {
+        "file": "apps/frontend/package-lock.json",
+        "hash": "12998179539436004228"
+      },
+      {
+        "file": "apps/frontend/package.json",
+        "hash": "2001092518331569418"
+      },
+      {
+        "file": "apps/frontend/public/vite.svg",
+        "hash": "16046085400642193116"
+      },
+      {
+        "file": "apps/frontend/src/App.css",
+        "hash": "3739391659270974612"
+      },
+      {
+        "file": "apps/frontend/src/App.tsx",
+        "hash": "17300935180198703117"
+      },
+      {
+        "file": "apps/frontend/src/assets/react.svg",
+        "hash": "16069471864800376455"
+      },
+      {
+        "file": "apps/frontend/src/index.css",
+        "hash": "13504153635654440336"
+      },
+      {
+        "file": "apps/frontend/src/main.tsx",
+        "hash": "1576147695209808179"
+      },
+      {
+        "file": "apps/frontend/src/pages/ProjectList.tsx",
+        "hash": "6891918092516447403"
+      },
+      {
+        "file": "apps/frontend/src/vite-env.d.ts",
+        "hash": "12946363841406869089"
+      },
+      {
+        "file": "apps/frontend/tsconfig.app.json",
+        "hash": "2323919910019125824"
+      },
+      {
+        "file": "apps/frontend/tsconfig.json",
+        "hash": "2365188958523842680"
+      },
+      {
+        "file": "apps/frontend/tsconfig.node.json",
+        "hash": "4200375265648421840"
+      },
+      {
+        "file": "apps/frontend/vite.config.ts",
+        "hash": "16225914092815047172"
+      },
+      {
+        "file": "catchup/.editorconfig",
+        "hash": "5443105041930014821"
+      },
+      {
+        "file": "catchup/.gitignore",
+        "hash": "6147899740314209172"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/file-map.json",
+        "hash": "10740317912480689851"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/lockfile.hash",
+        "hash": "16992085103769025965"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/nx_files.nxt",
+        "hash": "8449316750496353538"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/parsed-lock-file.json",
+        "hash": "2093489732309768721"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/project-graph.json",
+        "hash": "3266300041045091797"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/project-graph.lock",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "catchup/.nx/workspace-data/source-maps.json",
+        "hash": "1389868326933519382"
+      },
+      {
+        "file": "catchup/.vscode/extensions.json",
+        "hash": "3833545590435012078"
+      },
+      {
+        "file": "catchup/README.md",
+        "hash": "12610892723405971859"
+      },
+      {
+        "file": "catchup/nx.json",
+        "hash": "7611370597248234996"
+      },
+      {
+        "file": "catchup/package-lock.json",
+        "hash": "10571245700697349720"
+      },
+      {
+        "file": "catchup/package.json",
+        "hash": "9913731623459169425"
+      },
+      {
+        "file": "docker-compose.yml",
+        "hash": "16674041107289360096"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "7996750573858006715"
+      },
+      {
+        "file": "package.json",
+        "hash": "16899941203544980034"
+      },
+      {
+        "file": "poc req.txt",
+        "hash": "8634323993559030883"
+      },
+      {
+        "file": "ultimate req/3月中旬までに決めること.docx",
+        "hash": "7677409889446719853"
+      },
+      {
+        "file": "ultimate req/データモデル - ソフトウェア採算管理.pdf",
+        "hash": "6995100386363828210"
+      },
+      {
+        "file": "ultimate req/要件定義.docx",
+        "hash": "15947318533858038122"
+      }
+    ]
+  }
+}

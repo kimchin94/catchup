@@ -1,0 +1,64 @@
+{
+  "family": "my-app",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::409133839200:role/ecsTaskExecutionRole",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "catchup_backend_1",
+      "image": "409133839200.dkr.ecr.ap-southeast-2.amazonaws.com/my-app/backend",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://postgres:kim@your-rds-endpoint:5432/mydb?schema=public"
+        },
+        {
+          "name": "ALLOWED_ORIGINS",
+          "value": "https://localhost:5173"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-app",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "backend"
+        }
+      }
+    },
+    {
+      "name": "catchup_frontend_1",
+      "image": "409133839200.dkr.ecr.ap-southeast-2.amazonaws.com/my-app/frontend",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5173,
+          "hostPort": 5173,
+          "protocol": "tcp"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/my-app",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
+    }
+  ]
+}
