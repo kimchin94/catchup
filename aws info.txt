@@ -1,0 +1,405 @@
+python3 -m venv agenticSeek
+
+.\venv\Scripts\activate  (replace venv with name)
+
+
+
+/frontend
+npm run dev -- --host
+/backend
+npm run start:dev
+===
+try using Docker Desktop's CLI to start the PostgreSQL container since docker-compose is not available.
+
+docker run -d --name catchup-db -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=kim -e POSTGRES_DB=mydb -p 5432:5432 postgres:13
+===
+docker ps
+===
+apps/backend
+npx prisma migrate dev --name init
+docker-compose up -d db
+===
+Deployed using`docker-compose up --build`
+===
+To restart containers in Rancher Desktop:
+- Or use command line:`docker-compose down` followed by`docker-compose up -d`
+===
+
+!!!!!
+saml2aws login --profile cl-aws
+!!!!!
+
+aws ecr get-login-password --profile cl-aws | sudo docker login --username AWS --password-stdin 409133839200.dkr.ecr.ap-southeast-2.amazonaws.com
+
+aws ecr describe-repositories --profile cl-aws --query "repositories[].repository
+Name" --output text
+
+security group id: sg-099c448a93c879385
+cluster name: my-app-cluster
+
+secure id load balancer: sg-068becb32ba3b296a
+
+secure id ecs: sg-0dc4b6caf24541277
+
+// create iam role
+aws iam create-role --role-name my-ecs-task-execution-role \
+    --assume-role-policy-document '{
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ecs-tasks.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
+        }
+      ]
+    }' --profile cl-aws
+
+
+// check task status
+aws ecs describe-services --cluster my-app-cluster --services my-app-service --query "services[*].events" --profile cl-aws
+
+
+///
+subnet vpc:
+
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 describe-subnets --profile cl-aws
+{
+    "Subnets": [
+        {
+            "AvailabilityZoneId": "apse2-az3",
+            "MapCustomerOwnedIpOnLaunch": false,
+            "OwnerId": "409133839200",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:ap-southeast-2:409133839200:subnet/subnet-01cbb34d37a40eb85",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            },
+            "BlockPublicAccessStates": {
+                "InternetGatewayBlockMode": "off"
+            },
+            "SubnetId": "subnet-01cbb34d37a40eb85",
+            "State": "available",
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "CidrBlock": "172.31.32.0/20",
+            "AvailableIpAddressCount": 4091,
+            "AvailabilityZone": "ap-southeast-2a",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": false
+        },
+        {
+            "AvailabilityZoneId": "apse2-az1",
+            "MapCustomerOwnedIpOnLaunch": false,
+            "OwnerId": "409133839200",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:ap-southeast-2:409133839200:subnet/subnet-04fe4026de4043b61",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            },
+            "BlockPublicAccessStates": {
+                "InternetGatewayBlockMode": "off"
+            },
+            "SubnetId": "subnet-04fe4026de4043b61",
+            "State": "available",
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "CidrBlock": "172.31.0.0/20",
+            "AvailableIpAddressCount": 4090,
+            "AvailabilityZone": "ap-southeast-2b",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": false
+        },
+        {
+            "AvailabilityZoneId": "apse2-az2",
+            "MapCustomerOwnedIpOnLaunch": false,
+            "OwnerId": "409133839200",
+            "AssignIpv6AddressOnCreation": false,
+            "Ipv6CidrBlockAssociationSet": [],
+            "SubnetArn": "arn:aws:ec2:ap-southeast-2:409133839200:subnet/subnet-074e6158519a1c643",
+            "EnableDns64": false,
+            "Ipv6Native": false,
+            "PrivateDnsNameOptionsOnLaunch": {
+                "HostnameType": "ip-name",
+                "EnableResourceNameDnsARecord": false,
+                "EnableResourceNameDnsAAAARecord": false
+            },
+            "BlockPublicAccessStates": {
+                "InternetGatewayBlockMode": "off"
+            },
+            "SubnetId": "subnet-074e6158519a1c643",
+            "State": "available",
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "CidrBlock": "172.31.16.0/20",
+            "AvailableIpAddressCount": 4091,
+            "AvailabilityZone": "ap-southeast-2c",
+            "DefaultForAz": true,
+            "MapPublicIpOnLaunch": false
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 describe-vpcs --profile cl-aws
+{
+    "Vpcs": [
+        {
+            "OwnerId": "409133839200",
+            "InstanceTenancy": "default",
+            "CidrBlockAssociationSet": [
+                {
+                    "AssociationId": "vpc-cidr-assoc-03c62fbe8c9cf3256",
+                    "CidrBlock": "172.31.0.0/16",
+                    "CidrBlockState": {
+                        "State": "associated"
+                    }
+                }
+            ],
+            "IsDefault": true,
+            "BlockPublicAccessStates": {
+                "InternetGatewayBlockMode": "off"
+            },
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "State": "available",
+            "CidrBlock": "172.31.0.0/16",
+            "DhcpOptionsId": "dopt-00590f02b9992a10e"
+        }
+    ]
+}
+
+
+aws elbv2 create-load-balancer --profile cl-aws\
+  --name my-app-alb \
+  --subnets subnet-01cbb34d37a40eb85 subnet-04fe4026de4043b61 subnet-074e6158519a1c643\
+  --security-groups sg-068becb32ba3b296a
+{
+    "LoadBalancers": [
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:loadbalancer/app/my-app-alb/1e00a5cf3dc67fb5",
+            "DNSName": "my-app-alb-1849450811.ap-southeast-2.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "Z1GM3OXH4ZPM65",
+            "CreatedTime": "2025-03-27T12:32:54.626000+00:00",
+            "LoadBalancerName": "my-app-alb",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "State": {
+                "Code": "provisioning"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "ap-southeast-2a",
+                    "SubnetId": "subnet-01cbb34d37a40eb85",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-southeast-2b",
+                    "SubnetId": "subnet-04fe4026de4043b61",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "ap-southeast-2c",
+                    "SubnetId": "subnet-074e6158519a1c643",
+                    "LoadBalancerAddresses": []
+                }
+            ],
+            "SecurityGroups": [
+                "sg-068becb32ba3b296a"
+            ],
+            "IpAddressType": "ipv4"
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws elbv2 create-target-group --profile cl-aws \
+  --name backend-tg \
+  --protocol HTTP \
+  --port 3000 \
+  --vpc-id vpc-083d4b59bfec6975c \
+  --target-type ip \
+  --health-check-path / \
+  --health-check-interval-seconds 30
+{
+    "TargetGroups": [
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/backend-tg/f23b42f4056e26f3",
+            "TargetGroupName": "backend-tg",
+            "Protocol": "HTTP",
+            "Port": 3000,
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckEnabled": true,
+            "HealthCheckIntervalSeconds": 30,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 5,
+            "UnhealthyThresholdCount": 2,
+            "HealthCheckPath": "/",
+            "Matcher": {
+                "HttpCode": "200"
+            },
+            "TargetType": "ip",
+            "ProtocolVersion": "HTTP1",
+            "IpAddressType": "ipv4"
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws elbv2 create-target-group --profile cl-aws   --name frontend-tg   --protocol HTTP   --port 3000   --vpc-id vpc-083d4b59bfec6975c   --target-type ip   --health-check-path /   --health-check-interval-seconds 30
+{
+    "TargetGroups": [
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/frontend-tg/c7f9543b856d474b",
+            "TargetGroupName": "frontend-tg",
+            "Protocol": "HTTP",
+            "Port": 3000,
+            "VpcId": "vpc-083d4b59bfec6975c",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckEnabled": true,
+            "HealthCheckIntervalSeconds": 30,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 5,
+            "UnhealthyThresholdCount": 2,
+            "HealthCheckPath": "/",
+            "Matcher": {
+                "HttpCode": "200"
+            },
+            "TargetType": "ip",
+            "ProtocolVersion": "HTTP1",
+            "IpAddressType": "ipv4"
+        }
+    ]
+}
+
+ aws elbv2 create-listener --profile cl-aws   --load-balancer-arn arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:loadbalancer/app/my-app-alb/1e00a5cf3dc67fb5   --protocol HTTP   --port 80   --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/frontend-tg/c7f9543b856d474b
+{
+    "Listeners": [
+        {
+            "ListenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:listener/app/my-app-alb/1e00a5cf3dc67fb5/369ebb3076a6c5c0",
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:loadbalancer/app/my-app-alb/1e00a5cf3dc67fb5",
+            "Port": 80,
+            "Protocol": "HTTP",
+            "DefaultActions": [
+                {
+                    "Type": "forward",
+                    "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/frontend-tg/c7f9543b856d474b",
+                    "ForwardConfig": {
+                        "TargetGroups": [
+                            {
+                                "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/frontend-tg/c7f9543b856d474b",
+                                "Weight": 1
+                            }
+                        ],
+                        "TargetGroupStickinessConfig": {
+                            "Enabled": false
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws elbv2 create-listener --profile cl-aws   --load-balancer-arn arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:loadbalancer/app/my-app-alb/1e00a5cf3dc67fb5   --protocol HTTP   --port 3000   --default-actions Type=forward,TargetGroupArn=arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/backend-tg/f23b42f4056e26f3
+{
+    "Listeners": [
+        {
+            "ListenerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:listener/app/my-app-alb/1e00a5cf3dc67fb5/c7434dff7f5866c5",
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:loadbalancer/app/my-app-alb/1e00a5cf3dc67fb5",
+            "Port": 3000,
+            "Protocol": "HTTP",
+            "DefaultActions": [
+                {
+                    "Type": "forward",
+                    "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/backend-tg/f23b42f4056e26f3",
+                    "ForwardConfig": {
+                        "TargetGroups": [
+                            {
+                                "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/backend-tg/f23b42f4056e26f3",
+                                "Weight": 1
+                            }
+                        ],
+                        "TargetGroupStickinessConfig": {
+                            "Enabled": false
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 create-security-group --profile cl-aws --group-name ecs-tasks-sg --descri
+ption "Security group for ECS tasks"
+{
+    "GroupId": "sg-0dc4b6caf24541277",
+    "SecurityGroupArn": "arn:aws:ec2:ap-southeast-2:409133839200:security-group/sg-0dc4b6caf24541277"
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 authorize-security-group-ingress --group-name ecs-tasks-sg --protocol tcp
+ --port 3000 --source-group alb-sg
+
+You must specify a region. You can also configure your region by running "aws configure".
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 authorize-security-group-ingress --profile cl-aws --group-name ecs-tasks-
+sg --protocol tcp --port 3000 --source-group alb-sg
+{
+    "Return": true,
+    "SecurityGroupRules": [
+        {
+            "SecurityGroupRuleId": "sgr-050b8d1fc39413e8a",
+            "GroupId": "sg-0dc4b6caf24541277",
+            "GroupOwnerId": "409133839200",
+            "IsEgress": false,
+            "IpProtocol": "tcp",
+            "FromPort": 3000,
+            "ToPort": 3000,
+            "ReferencedGroupInfo": {
+                "GroupId": "sg-068becb32ba3b296a",
+                "UserId": "409133839200"
+            },
+            "SecurityGroupRuleArn": "arn:aws:ec2:ap-southeast-2:409133839200:security-group-rule/sgr-050b8d1fc39413e8a"
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ aws ec2 authorize-security-group-ingress --profile cl-aws --group-name ecs-tasks-sg --protocol tcp --port 5173 --source-group alb-sg
+{
+    "Return": true,
+    "SecurityGroupRules": [
+        {
+            "SecurityGroupRuleId": "sgr-009eae48687e1f0ad",
+            "GroupId": "sg-0dc4b6caf24541277",
+            "GroupOwnerId": "409133839200",
+            "IsEgress": false,
+            "IpProtocol": "tcp",
+            "FromPort": 5173,
+            "ToPort": 5173,
+            "ReferencedGroupInfo": {
+                "GroupId": "sg-068becb32ba3b296a",
+                "UserId": "409133839200"
+            },
+            "SecurityGroupRuleArn": "arn:aws:ec2:ap-southeast-2:409133839200:security-group-rule/sgr-009eae48687e1f0ad"
+        }
+    ]
+}
+kim@kim-agi:~/backend/catchup/catchup$ sudo docker ps --format "{{.Names}}"
+[sudo] password for kim:
+catchup_frontend_1
+catchup_backend_1
+catchup_db_1
+searxng
+redis
+kim@kim-agi:~/backend/catchup/catchup$ aws ecs create-service --profile cl-aws\
+  --cluster my-app-cluster \
+  --service-name my-app-service \
+  --task-definition my-app:1 \
+  --desired-count 1 \
+  --launch-type FARGATE \
+  --network-configuration "awsvpcConfiguration={subnets=[subnet-01cbb34d37a40eb85,subnet-04fe4026de4043b61,subnet-074e6158519a1c643],securityGroups=[sg-0dc4b6caf24541277],assignPublicIp=ENABLED}" \
+  --load-balancers \
+    "targetGroupArn=arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/frontend-tg/c7f9543b856d474b,containerName=catchup_frontend_1,containerPort=5173" \
+    "targetGroupArn=arn:aws:elasticloadbalancing:ap-southeast-2:409133839200:targetgroup/backend-tg/f23b42f4056e26f3,containerName=catchup_backend_1,containerPort=3000"
+
+
