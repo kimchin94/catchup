@@ -1,0 +1,74 @@
+{
+  "family": "catchup-app",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::409133839200:role/ecsTaskExecutionRole",
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "409133839200.dkr.ecr.ap-southeast-2.amazonaws.com/my-app/backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "postgresql://user:password@your-rds-endpoint:5432/mydb?schema=public"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/catchup-app",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "backend"
+        }
+      }
+    },
+    {
+      "name": "frontend",
+      "image": "409133839200.dkr.ecr.ap-southeast-2.amazonaws.com/my-app/frontend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 5173,
+          "hostPort": 5173,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {
+          "name": "BACKEND_URL",
+          "value": "http://localhost:3000"
+        }
+      ],
+      "dependsOn": [
+        {
+          "containerName": "backend",
+          "condition": "START"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/catchup-app",
+          "awslogs-region": "ap-southeast-2",
+          "awslogs-stream-prefix": "frontend"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "2048"
+} 
