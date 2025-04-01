@@ -26,16 +26,25 @@ RUN npm run build || npx tsc -b && npx vite build
 FROM nginx:alpine
 
 # Copy built assets from builder stage
+# COPY --from=0 /app/dist /usr/share/nginx/html
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration template
+# Copy nginx configuration
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+RUN apk add --no-cache gettext
 
 # Set environment variable with default value
-ENV BACKEND_URL=http://backend:3000
+# ENV BACKEND_URL=http://backend:3000
+# ENV BACKEND_URL=localhost:3000
+ENV BACKEND_URL=http://my-app-alb-1849450811.ap-southeast-2.elb.amazonaws.com:3000
 
 # Expose port
-EXPOSE 5173
+EXPOSE 5173 80
 
-# Start nginx with environment variables
-CMD ["nginx", "-g", "daemon off;"]
+# Start nginx
+# CMD ["nginx", "-g", "daemon off;"]
+CMD ["/entrypoint.sh"]

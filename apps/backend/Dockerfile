@@ -10,6 +10,7 @@ COPY package*.json ./
 RUN npm install
 RUN npm install -g prisma
 RUN npm install -g @nestjs/cli
+RUN npm install dotenv
 
 # Copy source code
 COPY . .
@@ -31,15 +32,18 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/prisma ./prisma
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 # Install Prisma globally in production
-RUN npm install -g prisma
+#RUN npm install -g prisma
 
 # Generate Prisma client in production
-RUN prisma generate
+#RUN prisma generate
 
 # Expose port
 EXPOSE 3000
 
 # Start the application
-CMD ["npm", "run", "start:prod"]
+# CMD ["npm", "run", "start:prod"]
+CMD ["/app/entrypoint.sh"]
